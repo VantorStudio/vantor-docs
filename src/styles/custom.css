@@ -1,0 +1,18 @@
+:root {
+  --sl-color-accent: #a259ff; /* Main accent purple */
+  --sl-color-text-accent: #a259ff;
+
+  --sl-color-hairline-light: #d7c2f1;
+  --sl-color-hairline-dark: #2d153f;
+
+  --sl-color-bg-nav: #2d153f;
+  --sl-color-bg-sidebar: #1a0f2e;
+  --sl-color-bg-page: #10061c;
+  --sl-color-bg-inline-code: #a259ff18;
+
+  --sl-color-text: #f3eaff;
+  --sl-color-text-muted: #c2aee2;
+
+  --sl-color-link: #c285ff;
+  --sl-color-link-hover: #f0e1ff;
+}
