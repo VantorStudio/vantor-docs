@@ -1,0 +1,1 @@
+"use strict";(self.webpackChunkvantor=self.webpackChunkvantor||[]).push([[3834],{3834:(e,a,c)=>{c.d(a,{createPacketServices:()=>r.$});var r=c(8569);c(9089)}}]);
