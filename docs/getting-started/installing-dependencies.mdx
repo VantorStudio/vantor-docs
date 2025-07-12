@@ -1,0 +1,75 @@
+---
+id: installing-dependencies
+title: Installing the Dependencies
+sidebar_position: 2
+---
+
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
+# Installing the Dependencies
+
+Vantor requires the following tools to be installed before building:
+
+- [Python](https://www.python.org/) (3.10 or higher recommended)
+- [CMake](https://cmake.org/)
+- [Git](https://git-scm.com/)
+- `C++ 20` compatible compiler
+- `make` (GNU Make)
+
+These dependencies must be installed and available in your system's `PATH`.
+
+## Platform Instructions
+
+<Tabs
+  defaultValue="linux"
+  values={[
+    {label: 'Linux', value: 'linux'},
+    {label: 'Windows', value: 'windows'},
+  ]}>
+
+<TabItem value="linux">
+
+### Ubuntu / Debian
+
+```bash
+sudo apt update
+sudo apt install python3 cmake git make
+```
+
+### Arch Linux
+
+```bash
+sudo pacman -S python cmake git make
+```
+
+</TabItem>
+
+<TabItem value="windows">
+
+### Windows with Chocolatey
+
+ - Install Chocolatey on Windows using [this link](https://chocolatey.org/install).
+
+ - Run the following in an **administrator PowerShell**:
+
+```powershell
+choco install python cmake git make
+```
+
+</TabItem>
+</Tabs>
+
+## Cross-Platform Building
+
+Vantor supports cross-compiling **from Linux to Windows** using `x86_64-w64-mingw32`. Example for Ubuntu:
+
+```bash
+sudo apt install g++-mingw-w64-x86-64
+```
+
+To target Windows, Vantor uses this toolchain automatically if detected.
+
+:::note
+Cross-compiling **from Windows to Linux** is **not supported**. If you want to build for Linux on Windows, you **must** use [WSL](https://learn.microsoft.com/en-us/windows/wsl/). We recommend using WSL2 with an Ubuntu distribution.
+:::

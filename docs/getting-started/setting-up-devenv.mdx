@@ -1,0 +1,145 @@
+---
+id: setting-up-devenv
+title: Setting up your Environment
+sidebar_position: 2
+---
+
+# Setting up your Environment
+
+This guide will walk you through setting up your development environment for Vantor Engine, including cloning the engine with all its dependencies and creating your first project.
+
+## Prerequisites
+
+Before you begin, make sure you have the following installed on your system:
+
+- **Git** - Version control system
+- **CMake** - Build system (version 3.16 or higher recommended)
+- **Make and a C++ compiler** - GCC, Clang, or MSVC with C++20 support
+- **Python 3** - For build scripts and tools
+
+:::note
+Before you clone, make a new project folder where your project will be an change into that directoy
+:::
+
+## Cloning Vantor Engine
+
+Vantor Engine uses git submodules for managing dependencies. To clone the repository with all its submodules, use the `--recursive` flag:
+
+
+```bash
+git clone --recursive https://github.com/LukasRennhofer/Vantor.git
+```
+
+:::tip
+If you've already cloned the repository without the `--recursive` flag, you can initialize and update the submodules with:
+```bash
+git submodule update --init --recursive
+```
+:::
+
+## Project Structure Setup
+
+Once you have Vantor Engine cloned, you'll need to create your project structure. Here's how to set up a basic project:
+
+### 1. Create the Source Folder
+
+Create a `Source` folder to contain your source code:
+
+```bash
+mkdir Source
+mkdir Build
+```
+
+Your project structure should now look like this:
+```
+MyVantorProject/
+├── Vantor/
+├── Source/
+├── Build/
+└── CMakeLists.txt (we'll create this next)
+```
+
+### 3. Create CMakeLists.txt
+
+Create a `CMakeLists.txt` file in your project root with the following content:
+
+```cmake title="CMakeLists.txt"
+cmake_minimum_required(VERSION 3.10)
+
+# Include CMake build files
+include(Vantor/Vantor/CMake/VantorCMake.cmake)
+
+project(MyVantorProject) # Replace this with your project name
+set(CMAKE_CXX_STANDARD 20)
+
+# Add engine subdirectory
+add_subdirectory(Vantor/Vantor/Source ${CMAKE_BINARY_DIR}/VantorBuild)
+
+# Add Source Code of project
+add_executable(MyVantorProject Source/main.cpp)
+
+# Set up Project Target for Vantor
+SetUpVantorTarget(MyVantorProject)
+
+# Include Engine API Includes
+target_include_directories(MyVantorProject PRIVATE Vantor//Vantor/Include)
+
+# Link with Vantor
+target_link_libraries(MyVantorProject PRIVATE Vantor)
+```
+
+:::note
+Make sure to ajdust the path of the Engine, according to your own environment.
+:::
+
+### 4. Create main.cpp
+
+Create your main application file in the `Source` folder
+
+```bash
+touch Source/main.cpp
+```
+
+## Development Workflow
+
+Here's a typical development workflow when working with Vantor Engine:
+
+1. **Make changes** to your source code in the `Source` folder
+2. **Build** your project using `cmake` from the build directory
+3. **Test** your changes by running the executable
+4. **Debug** using your preferred debugger or IDE
+
+## IDE Setup
+
+### Visual Studio Code
+
+For VS Code users, create a `.vscode/settings.json` file:
+
+```json title=".vscode/settings.json"
+{
+    "cmake.buildDirectory": "${workspaceFolder}/Build",
+    "cmake.sourceDirectory": "${workspaceFolder}",
+    "files.associations": {
+        "*.h": "cpp",
+        "*.cpp": "cpp"
+    }
+}
+```
+
+### CLion
+
+CLion should automatically detect your CMakeLists.txt file and configure the project.
+
+## Troubleshooting
+
+### Common Issues
+
+**Submodule not found errors:**
+- Make sure you cloned with `--recursive` or ran `git submodule update --init --recursive`
+
+**Build errors:**
+- Check that you have a C++20 compatible compiler
+- Verify all dependencies are properly installed
+
+**Runtime errors:**
+- Check that assets are copied to the correct output directory

@@ -1,22 +1,45 @@
-# Vantor Documentation Site (docs.vantor.net)
+# Vantor Documentation site
 
-[![Built with Starlight](https://astro.badg.es/v2/built-with-starlight/tiny.svg)](https://starlight.astro.build)
+This website is built using [Docusaurus](https://docusaurus.io/), a modern static website generator.
 
-The official Vantor Engine docs site built with astros starlight, including its own style and connection to vantor.net
+## Editing the docs
 
-## 🧞 Commands
+The docs are written by the Vantor Studios developer team and its helpers. Any external contributors can not change production docs at any given time, as it can change the production cycle of the Vantor Engine.
 
-All commands are run from the root of the project, from a terminal:
+## Installation
 
-| Command                   | Action                                           |
-| :------------------------ | :----------------------------------------------- |
-| `npm install`             | Installs dependencies                            |
-| `npm run dev`             | Starts local dev server at `localhost:4321`      |
-| `npm run build`           | Build your production site to `./dist/`          |
-| `npm run preview`         | Preview your build locally, before deploying     |
-| `npm run astro ...`       | Run CLI commands like `astro add`, `astro check` |
-| `npm run astro -- --help` | Get help using the Astro CLI                     |
+```bash
+yarn
+```
 
-## 👀 Want to edit the docs yourself?
+## Local Development
 
-- Edit or create a Markdown file in the contents folder and make a pull request!
+```bash
+yarn start
+```
+
+This command starts a local development server and opens up a browser window. Most changes are reflected live without having to restart the server.
+
+## Build
+
+```bash
+yarn build
+```
+
+This command generates static content into the `build` directory and can be served using any static contents hosting service.
+
+## Deployment
+
+Using SSH:
+
+```bash
+USE_SSH=true yarn deploy
+```
+
+Not using SSH:
+
+```bash
+GIT_USER=<Your GitHub username> yarn deploy
+```
+
+If you are using GitHub pages for hosting, this command is a convenient way to build the website and push to the `gh-pages` branch.

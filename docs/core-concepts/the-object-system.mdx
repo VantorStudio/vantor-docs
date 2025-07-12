@@ -1,0 +1,229 @@
+---
+id: the-object-system
+title: The Object System
+sidebar_position: 2
+---
+
+# Vantor's Object System
+
+In commercial engines like Unreal Engine, you work with **Entities** that represent objects in your game or scene that you want to render or interact with. You can attach **Components** to these entities, where each entity can have multiple components, but only one of each type.
+
+For example, a Camera (which is an Entity) can have both a `TransformComponent` and a `MeshComponent` simultaneously. The `TransformComponent` handles the position and rotation of the camera, while the `MeshComponent` provides the renderable representation of the camera, allowing you to visualize where it's located in the scene.
+
+Vantor Engine follows a similar approach using its own custom-built object system with a registry to store and manage all objects efficiently.
+
+:::info Entity-Component-System (ECS)
+Vantor's object system is based on the Entity-Component-System (ECS) architectural pattern, which provides:
+- **Flexibility**: Easy to add, remove, and modify functionality
+- **Performance**: Efficient memory usage and cache-friendly data structures  
+- **Modularity**: Clean separation of data and behavior
+:::
+
+## Core Concepts
+
+### VObject
+**VObjects** are the fundamental entities in Vantor Engine. They represent any object in your game world and can be created using the `VORegistry` (Vantor Object Registry).
+
+### VComponent  
+**VComponents** are the functional building blocks that can be attached to VObjects to provide specific capabilities like rendering, physics, audio, or custom game logic.
+
+### VORegistry
+The **Vantor Object Registry** manages the lifecycle of all VObjects, providing efficient creation, destruction, and lookup of entities.
+
+## Creating VObjects
+
+We can create new VObject-derived entities and register them with the VORegistry. The registry handles memory management and provides unique identifiers for each object.
+
+Here's an example of creating a camera entity:
+
+```cpp title="Creating a Camera Entity"
+#include <Vantor/Vantor.hpp>
+
+int main() {
+    Vantor::VApplication app;
+
+    // Application creation data
+    Vantor::VApplicationCreateInfo appInfo;
+    appInfo.windowWidth = 1280;
+    appInfo.windowHeight = 720;
+    appInfo.windowTitle = "Object System Demo";
+
+    app.Initialize(appInfo);
+
+    // highlight-start
+    // Create a Camera object and position it at (1, 1, 1)
+    auto camera = Vantor::Object::VORegistry::CreateEntity<Vantor::Renderer::Camera>(
+        Vantor::Math::VVector3(1.0f, 1.0f, 1.0f)
+    );
+    // highlight-end
+
+    while (app.IsRunning()) {
+        app.BeginFrame();
+
+        // Game update and rendering logic goes here
+
+        app.EndFrame();
+    }
+
+    app.Shutdown();
+    return 0;
+} 
+```
+
+:::tip Object Creation
+The `CreateEntity<T>()` method is a template function that:
+- Creates a new object of type T
+- Registers it with the VORegistry
+- Returns a shared pointer to the created object
+- Automatically handles memory management
+:::
+
+## Working with VComponents
+
+Components provide functionality to VObjects. Think of them as modular pieces that define what an object can do or what properties it has.
+
+### Adding Components
+
+We can attach functionality to our objects through components. Each component serves a specific purpose and can be added dynamically at runtime.
+
+Here's how to add a `VTagComponent` to give your camera a name:
+
+```cpp title="Adding Components to Objects"
+#include <Vantor/Vantor.hpp>
+
+int main() {
+    Vantor::VApplication app;
+
+    // Application setup
+    Vantor::VApplicationCreateInfo appInfo;
+    appInfo.windowWidth = 1280;
+    appInfo.windowHeight = 720;
+    appInfo.windowTitle = "Component System Demo";
+
+    app.Initialize(appInfo);
+
+    // Create camera entity
+    auto camera = Vantor::Object::VORegistry::CreateEntity<Vantor::Renderer::Camera>(
+        Vantor::Math::VVector3(1.0f, 1.0f, 1.0f)
+    );
+
+    // highlight-start
+    // Add a TagComponent to identify our camera
+    camera->AddComponentVoid<Vantor::Object::VTagComponent>();
+    
+    // Configure the tag component with a name
+    auto tagComponent = camera->GetComponent<Vantor::Object::VTagComponent>();
+    tagComponent->SetName("MainCamera");
+    // highlight-end
+
+    while (app.IsRunning()) {
+        app.BeginFrame();
+
+        // highlight-start
+        // Example: Access the camera by its tag
+        std::string cameraName = tagComponent->GetName();
+        // Use the camera name for debugging or UI purposes
+        // highlight-end
+
+        app.EndFrame();
+    }
+
+    app.Shutdown();
+    return 0;
+}
+```
+
+### Common VComponents
+
+Vantor Engine provides several built-in components for common functionality:
+
+| Component | Purpose |
+|-----------|---------|
+| `VTagComponent` | Object identification and naming |
+| `VTransformComponent` | Position, rotation, and scale |
+| `VMeshComponent` | 3D model rendering |
+| `VMaterialComponent` |Adds Textures, Shaders, Color, ... |
+| And more... | |
+
+:::note Component Management
+- Use `AddComponentVoid<T>()` to add a component of type T
+- Use `GetComponent<T>()` to retrieve an existing component
+- Use `HasComponent<T>()` to check if a component exists
+- Use `RemoveComponent(T)` to remove a component
+:::
+
+## Building Scene Hierarchies
+
+VObjects can be organized in hierarchical structures using parent-child relationships. This is essential for creating complex scenes where objects move together or inherit transformations.
+
+```cpp title="Creating Scene Hierarchies"
+// Create a root object for scene organization
+auto sceneRoot = Vantor::Object::VORegistry::CreateEntity<Vantor::Object::VObject>();
+sceneRoot->AddComponentVoid<Vantor::Object::VTagComponent>();
+sceneRoot->GetComponent<Vantor::Object::VTagComponent>()->SetName("SceneRoot");
+
+// highlight-start
+// Create a camera group
+auto cameraGroup = Vantor::Object::VORegistry::CreateEntity<Vantor::Object::VObject>();
+cameraGroup->AddComponentVoid<Vantor::Object::VTagComponent>();
+cameraGroup->GetComponent<Vantor::Object::VTagComponent>()->SetName("CameraGroup");
+
+// Add camera as a child of the camera group
+cameraGroup->AddChild(camera);
+
+// Add camera group as a child of the scene root
+sceneRoot->AddChild(cameraGroup);
+// highlight-end
+```
+
+### Hierarchy Benefits
+
+When objects are arranged in a hierarchy:
+
+- **Transform Inheritance**: Child objects inherit their parent's transformations
+- **Batch Operations**: Operations on parent objects affect all children
+- **Logical Organization**: Related objects can be grouped together
+- **Scene Management**: Easy to manage complex scenes with nested structures
+
+### Custom Components
+
+You can create your own components by inheriting from `VComponent`:
+
+```cpp title="Custom Component Example"
+// highlight-start
+class HealthComponent : public Vantor::Object::VComponent {
+private:
+    float health = 100.0f;
+    float maxHealth = 100.0f;
+
+public:
+    explicit HealthComponent(Vantor::Object::VObject *owner) : Vantor::Object::VComponent(owner) {}
+
+    void SetHealth(float newHealth) { 
+        health = std::clamp(newHealth, 0.0f, maxHealth); 
+    }
+    
+    float GetHealth() const { return health; }
+    
+    bool IsAlive() const { return health > 0.0f; }
+    
+    void TakeDamage(float damage) {
+        SetHealth(health - damage);
+    }
+};
+
+// Usage
+auto player = Vantor::Object::VORegistry::CreateEntity<Vantor::Object::VObject>();
+player->AddComponentVoid<HealthComponent>();
+auto playerHealth = player->GetComponent<HealthComponent>();
+playerHealth->TakeDamage(25.0f);
+// highlight-end
+```
+
+## Next Steps
+
+Now that you understand Vantor's object system, explore the source code of the ObjectSystem here:
+
+ - [VObject Source Code](https://github.com/LukasRennhofer/Vantor/blob/main/Vantor/Source/ObjectSystem/VOS_Object.hpp)
+ - [VComponent Source Code](https://github.com/LukasRennhofer/Vantor/blob/main/Vantor/Source/ObjectSystem/Component/VOS_Component.hpp)
+ - [VORegistry Source Code](https://github.com/LukasRennhofer/Vantor/blob/main/Vantor/Source/ObjectSystem/Register/VOS_Registry.hpp)

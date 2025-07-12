@@ -1,0 +1,184 @@
+---
+id: building-your-project
+title: Building Your Project
+sidebar_position: 3
+---
+
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
+# Building Your Project
+
+This guide covers how to build your Vantor Engine project using CMake, including platform-specific configurations and build system setup.
+
+## Build System Overview
+
+Vantor Engine uses CMake as its primary build system, which provides cross-platform support and flexible configuration options. The build process involves:
+
+1. **Configuration** - CMake generates platform-specific build files
+2. **Compilation** - The actual building of source code
+3. **Linking** - Combining object files and libraries
+
+## Project Structure
+
+Before building, ensure your project has the following structure:
+
+```
+MyVantorProject/
+├── Vantor/                  # Engine Directory
+├── Source/                 # Your source code
+│   ├── main.cpp
+│   └── ... (other source files)
+├── Build/                  # Build output directory
+├── Assets/                 # Game assets (optional)
+└──CMakeLists.txt         # CMake configuration
+```
+
+## Platform Configuration
+
+Vantor Engine supports multiple platforms through CMake variables. You can specify the target platform during configuration.
+
+### Setting Platform Variables
+
+Use the `PLATFORM` variable to specify your target platform:
+
+```bash
+# Windows
+cmake -DPLATFORM=Windows ..
+
+# Linux
+cmake -DPLATFORM=Linux ..
+
+# Nintendo Switch (Experimental and not avalible to public yet)
+cmake -DPLATFORM=Switch ..
+```
+
+## Building the Project
+
+### Step 1: Create Build Directory if not done yet
+
+First, create and navigate to the Build directory:
+
+```bash
+cd MyVantorProject
+mkdir -p Build
+cd Build
+```
+
+:::tip
+Always build in a separate directory to keep your source tree clean. This is called an "out-of-source build."
+:::
+
+### Step 2: Configure with CMake
+
+Configure your project for the target platform:
+
+<Tabs
+  defaultValue="linux"
+  values={[
+    {label: 'Linux', value: 'linux'},
+    {label: 'Windows', value: 'windows'},
+  ]}>
+
+
+<TabItem value="linux">
+```
+# Building with Make
+cmake -G "Unix Makefiles" -DPLATFORM=Linux ..
+```
+</TabItem>
+<TabItem value="windows">
+```bash
+# Building with Make
+cmake -G "Unix Makefiles" -DPLATFORM=Windows ..
+```
+</TabItem>
+</Tabs>
+
+### Step 3: Build the Project
+
+Once configured, build your project:
+
+```bash
+# Build project using Make
+make
+```
+
+### Build Configuration Options
+
+You can customize your build with additional CMake variables:
+
+:::note
+These features will be implemented later on!
+:::
+
+### Custom Build Directory Names
+
+Organize builds by platform and configuration:
+
+```bash
+# Create platform-specific build directories
+mkdir Build-Windows-Release
+mkdir Build-Linux-Debug
+
+# Configure each separately
+cd Build-Windows-Release
+cmake -G "Unix Makefiles" -DPLATFORM=Windows ../..
+```
+
+### Clean Builds
+
+Remove build artifacts and start fresh:
+
+```bash
+# Clean build files
+cmake --build . --target clean
+
+# Or remove the entire Build directory
+cd ..
+rm -rf Build
+mkdir Build
+cd Build
+cmake ..
+```
+
+## Running Your Built Project
+
+After a successful build, your executable will be in the Build directory:
+
+```bash
+# Windows
+./MyVantorProject.exe
+
+# Linux
+./MyVantorProject
+```
+
+## Troubleshooting Build Issues
+
+### Common Problems
+
+**CMake not found:**
+```bash
+# Install CMake
+# Ubuntu/Debian
+sudo apt-get install cmake
+
+# Windows - Download from https://cmake.org
+```
+
+**Compiler not found:**
+- Ensure you have a C++20 compatible compiler installed
+- On Windows, install Visual Studio or MinGW
+- On Linux, install build-essential: `sudo apt-get install build-essential`
+
+**Missing dependencies:**
+- Make sure all git submodules are initialized: `git submodule update --init --recursive`
+- Install platform-specific dependencies as listed in the prerequisites
+
+**Build fails with linking errors:**
+- Check that all required libraries are installed
+- Verify the VANTOR_ENGINE_PATH points to the correct location
+- Ensure platform-specific libraries are available
+
+Happy building! 🔨
