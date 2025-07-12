@@ -1,1 +1,0 @@
-"use strict";(self.webpackChunkvantor=self.webpackChunkvantor||[]).push([[8567],{8567:(e,r,c)=>{c.d(r,{createArchitectureServices:()=>t.S});var t=c(3333);c(9089)}}]);

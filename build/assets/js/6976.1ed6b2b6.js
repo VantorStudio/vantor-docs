@@ -1,1 +1,0 @@
-"use strict";(self.webpackChunkvantor=self.webpackChunkvantor||[]).push([[6976],{6976:(e,a,r)=>{r.d(a,{createPieServices:()=>s.f});var s=r(8187);r(9089)}}]);
